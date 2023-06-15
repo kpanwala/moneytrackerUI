@@ -1,0 +1,24 @@
+<div class="container">
+    <h3><b>Expenses</b></h3>
+    <div class="card shadow mt-2 ms-2 me-2 bg-body rounded" style="height: 18rem; width: 25rem;">
+        <!-- <div class="card-body">
+            <div class="chart-container" style="position: relative; height:13rem; width:13rem;">
+                <p-chart type="polarArea" [data]="data" [options]="options"></p-chart>
+            </div>
+            <h6 class="">Expenses Categorywise</h6>
+        </div> -->
+        <div class="card-body">
+            <div class="chart-container" style="height:15rem; width:20rem;">
+                <p-chart type="bar" [data]="dataPolar" [options]="optionsPolar"></p-chart>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="card shadow mt-2 ms-2 me-2 bg-body rounded" style="width: 25rem; height: 15rem;">
+        <div class="card-body">
+            <div class="chart-container" style="height:25rem; width:20rem;">
+                <p-chart type="bar" [data]="dataStacked" [options]="optionsStacked"></p-chart>
+            </div>
+        </div>
+    </div> -->
+</div>

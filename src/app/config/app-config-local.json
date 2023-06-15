@@ -1,0 +1,4 @@
+{
+    "userDetailsApi": "http://localhost:8081/moneymanager/authenticate",
+    "transactionApi": "http://localhost:8081/moneymanager/getUserTransactions"
+}
