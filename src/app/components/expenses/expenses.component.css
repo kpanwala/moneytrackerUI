@@ -12,3 +12,12 @@ canvas {
   background: #fff;
   height: 50rem;
 }
+
+:host ::ng-deep .p-dropdown-label {
+  padding-right: 0rem !important;
+  font-size: 0.7rem !important;
+}
+
+:host ::ng-deep .p-dropdown-trigger {
+  font-size: 0.7rem !important;
+}

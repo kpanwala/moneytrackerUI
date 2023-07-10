@@ -1,6 +1,10 @@
 import { Component, VERSION } from '@angular/core';
 import { AppService } from './services/app.service';
-
+interface UserDetails {
+  f_name: string;
+  l_name: string;
+  id: number;
+}
 @Component({
   selector: 'my-app',
   templateUrl: './app.component.html',
@@ -9,8 +13,12 @@ import { AppService } from './services/app.service';
 export class AppComponent {
   sidebarExpanded = false;
   id: number = -1;
-  userDetails: any;
   name: string = '';
+  userDetails: { name: string; cards: any; id: any } = {
+    name: '',
+    cards: undefined,
+    id: -1,
+  };
 
   constructor(private dataService: AppService) {}
 
@@ -21,13 +29,15 @@ export class AppComponent {
 
   getUserData() {
     this.dataService.getUserDetails('kalp', '12345').subscribe(
-      ({ f_name: fname, l_name: lname, id: id, cards: cards }) => {
+      ({ userdetails: userdetails, card: card }) => {
+        const { f_name, l_name, id } = userdetails;
         this.userDetails = {
-          name: fname + ' ' + lname,
-          cards: JSON.parse(cards.replaceAll("'", '"')),
+          name: f_name + ' ' + l_name,
+          cards: card,
           id: id,
         };
-        this.name = fname + ' ' + lname;
+        this.name = f_name + ' ' + l_name;
+        console.log(this.userDetails);
       },
       (error) => {
         console.log(error);

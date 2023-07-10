@@ -43,6 +43,56 @@ export class AppService {
     );
   }
 
+  getUserTransactionsYearWise(id: number, startYear: number): Observable<any> {
+    let params = new HttpParams().set('id', id).set('startYear', startYear);
+
+    return this.http.get(
+      `http://localhost:8081/moneymanager/getUserTransactionsByYear`,
+      { params }
+    );
+  }
+
+  getUserTransactionsYearRange(
+    id: number,
+    startYear: number,
+    endYear: number = new Date().getFullYear()
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('id', id)
+      .set('startYear', startYear)
+      .set('endYear', endYear);
+
+    return this.http.get(
+      `http://localhost:8081/moneymanager/getUserTransactionsByYear`,
+      { params }
+    );
+  }
+
+  getUserTransactionsMonthWise(id: number, startYear: number): Observable<any> {
+    let params = new HttpParams().set('id', id).set('startYear', startYear);
+
+    return this.http.get(
+      `http://localhost:8081/moneymanager/getUserTransactionsByMonths`,
+      { params }
+    );
+  }
+
+  getUserTransactionsMonthRange(
+    id: number,
+    startYear: number,
+    endYear: number = new Date().getFullYear()
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('id', id)
+      .set('startYear', startYear)
+      .set('endYear', endYear);
+
+    return this.http.get(
+      `http://localhost:8081/moneymanager/getUserTransactionsByMonths`,
+      { params }
+    );
+  }
+
   sendData(message: string) {
     this.subject.next(message);
   }
