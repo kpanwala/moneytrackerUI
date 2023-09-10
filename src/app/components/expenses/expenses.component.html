@@ -17,16 +17,20 @@ Get month wise expenses
         </div>
     </div>
 
-    <div class="card shadow mt-2 ms-2 me-2 bg-body rounded" style="width: 25rem; height: 15rem;">
+    <div class="card shadow mt-2 ms-2 me-2 bg-body rounded" style="width: 25rem; height: 18rem;">
         <form [formGroup]="cardDropdownForm">
-            <p-dropdown formControlName="selectedCard" class="float-end me-3" [options]="cardDropdown"
-                [style]="{'width':'10rem', 'height':'2rem', 'margin-top':'0.5rem'}" placeholder="Select Card"
+            <p-dropdown formControlName="selectedTime" class="float-end me-3" [options]="timeDropdown"
+                [style]="{'width':'10rem', 'height':'2rem', 'margin-top':'0.5rem'}" placeholder="Select time"
                 optionLabel="name" autoWidth="true" autoHeight="true" [showClear]="true">
             </p-dropdown>
+            <!-- <p-dropdown formControlName="selectedCard" class="float-end me-3" [options]="cardDropdown"
+                [style]="{'width':'10rem', 'height':'2rem', 'margin-top':'0.5rem'}" placeholder="Select Card"
+                optionLabel="name" autoWidth="true" autoHeight="true" [showClear]="true">
+            </p-dropdown> -->
         </form>
         <div class="card-body">
-            <div class="chart-container" style="height:25rem; width:20rem;">
-                <p-chart type="bar" [data]="dataStacked" [options]="optionsStacked"></p-chart>
+            <div class="chart-container" style="height:15rem; width:20rem;">
+                <p-chart type="bar" [data]="dataStacked" [options]="optionsStacked" height="220"></p-chart>
             </div>
         </div>
     </div>

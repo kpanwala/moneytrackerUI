@@ -37,6 +37,7 @@ export class AppComponent {
           id: id,
         };
         this.name = f_name + ' ' + l_name;
+        sessionStorage.setItem('userDetails', JSON.stringify(this.userDetails));
         console.log(this.userDetails);
       },
       (error) => {

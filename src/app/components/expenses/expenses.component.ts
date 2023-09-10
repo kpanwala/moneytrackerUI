@@ -38,6 +38,13 @@ export class ExpensesComponent implements OnInit {
     'rgb(55, 230, 75)',
     'rgb(184, 255, 112)',
   ];
+
+  timeDropdown: any[] = [
+    { name: 'Current Month', id: 0 },
+    { name: 'Current Quarter', id: 1 },
+    { name: 'Current Year', id: 2 },
+    { name: 'Previous year', id: 3 },
+  ];
   subscription: any;
   userDetails: any;
   name: any;
@@ -46,10 +53,14 @@ export class ExpensesComponent implements OnInit {
   cardDropdown: Array<any> = [];
   cardDropdownForm: FormGroup = new FormGroup({
     selectedCard: new FormControl(),
+    selectedTime: new FormControl(),
   });
   verticalData: any;
   verticalOptions: any;
   transactionsByMonths: Array<number> = [];
+  categoryTransSelectedTime: number = 2;
+  categoryTransSelectedCard: number = -1;
+  usrId: number = 1;
 
   constructor(private dataService: AppService) {
     this.subscription = this.dataService.getData().subscribe((x) => {
@@ -64,19 +75,41 @@ export class ExpensesComponent implements OnInit {
         });
       });
     });
+    this.categoryTransSelectedTime = 2;
   }
 
   ngOnInit() {
-    this.cardDropdownForm?.get('selectedCard')?.valueChanges.subscribe((x) => {
-      if (x != null) {
-        this.getStackedBarChart(this.cardBasedExpense, x.id);
-      } else {
-        this.getStackedBarChart(this.cardBasedExpense);
-      }
-    });
+    // this.cardDropdownForm?.get('selectedCard')?.valueChanges.subscribe((x) => {
+    //   if (x != null) {
+    //     this.categoryTransSelectedCard = x.id;
+    //   }
+
+    //   this.getStackedBarChart(
+    //     this.cardBasedExpense,
+    //     this.categoryTransSelectedTime,
+    //     this.categoryTransSelectedCard
+    //   );
+    // });
+
     // this.getUserTransations(1);
     // this.getUserTransationsYearWise(1, 2023);
-    this.getUserTransactionsMonthWise(1, 2023);
+    this.getUserTransactionsMonthWise(this.usrId, new Date().getFullYear());
+
+    this.cardDropdownForm?.get('selectedTime')?.valueChanges.subscribe((x) => {
+      if (x != null) {
+        this.categoryTransSelectedTime = x.id;
+        console.log(x);
+      } else {
+        this.categoryTransSelectedTime = 2;
+        console.log(x);
+      }
+
+      this.getStackedBarChart(
+        this.monthWiseTrans.transactionsByYears[0].transactionsByMonths,
+        this.categoryTransSelectedTime,
+        this.categoryTransSelectedCard
+      );
+    });
   }
 
   getUserTransactionsMonthWise(id: number, startYear: number) {
@@ -90,12 +123,19 @@ export class ExpensesComponent implements OnInit {
         console.log(this.transactions);
 
         //Get Category based Transactions Summary
-        this.getCategoryBasedTransactionSummary();
-        console.log(this.categoryBasedExpense);
+        this.categoryBasedExpense = this.getCategoryBasedTransactionSummary(
+          this.transactions
+        );
+        //console.log(this.categoryBasedExpense);
 
         //Get Card based Transactions Summary
-        this.getCardBasedTransactionSummary();
-        console.log(this.cardBasedExpense);
+        this.cardBasedExpense = this.getCardBasedTransactionSummary(
+          this.cards,
+          this.categoryBasedExpense,
+          this.cardBasedExpense,
+          this.transactions
+        );
+        //console.log(this.cardBasedExpense);
       },
       (error: Error) => {
         console.log(error);
@@ -103,31 +143,41 @@ export class ExpensesComponent implements OnInit {
       () => {
         // this.getPolarChart(this.categoryBasedExpense);
         this.getVerticalChart();
-        this.getStackedBarChart(this.cardBasedExpense);
-        console.log(this.cardBasedExpense);
+        this.getStackedBarChart(
+          this.monthWiseTrans.transactionsByYears[0].transactionsByMonths,
+          this.categoryTransSelectedTime,
+          this.categoryTransSelectedCard
+        );
+        //console.log(this.cardBasedExpense);
       }
     );
   }
 
-  getCardBasedTransactionSummary() {
-    this.cards.forEach((c) => {
-      this.addPropertyToObj(this.cardBasedExpense, c.cardId, {});
+  getCardBasedTransactionSummary(
+    cards: any,
+    categoryBasedExpense: any,
+    cardBasedExpense: any,
+    transactions: any
+  ) {
+    cards.forEach((c: any) => {
+      this.addPropertyToObj(cardBasedExpense, c.cardId, {});
 
-      Object.keys(this.categoryBasedExpense).forEach((cat) => {
-        this.addValueToPropertyObj(this.cardBasedExpense[c.cardId], cat, 0);
+      Object.keys(categoryBasedExpense).forEach((cat) => {
+        this.addValueToPropertyObj(cardBasedExpense[c.cardId], cat, 0);
       });
     });
 
     //Process for expenses card
-    this.transactions.forEach((e: any) => {
-      console.log(e);
+    transactions.forEach((e: any) => {
       this.addPropertyToObj(
-        this.cardBasedExpense[e.cardIdUsed],
+        cardBasedExpense[e.cardIdUsed],
         e.category,
         e.transactionAmount
       );
-      console.log(this.cardBasedExpense);
     });
+
+    //console.log(cardBasedExpense);
+    return cardBasedExpense;
   }
 
   getTransactions(data: any) {
@@ -148,7 +198,7 @@ export class ExpensesComponent implements OnInit {
             this.transactions.push(tran);
           });
         });
-        console.log(this.transactionsByMonths);
+        //console.log(this.transactionsByMonths);
       }
     );
 
@@ -157,25 +207,37 @@ export class ExpensesComponent implements OnInit {
     });
   }
 
-  getCategoryBasedTransactionSummary() {
-    this.transactions.forEach(
-      (e: { category: string | number; transactionAmount: any }) => {
-        this.categoryBasedExpense[e.category] =
-          e.transactionAmount +
-          (this.categoryBasedExpense[e.category] == null
-            ? 0
-            : this.categoryBasedExpense[e.category]);
-      }
-    );
+  getCategoryBasedTransactionSummary(data: any): any {
+    //console.log(data);
+    let categoryBasedExpense: { [x: string]: number } = {
+      Lifestyle: 0,
+      Food: 0,
+      Entertainment: 0,
+      Others: 0,
+      Travel: 0,
+      Utility: 0,
+    };
+
+    data.forEach((e: { category: string | number; transactionAmount: any }) => {
+      categoryBasedExpense[e.category] =
+        e.transactionAmount +
+        (categoryBasedExpense[e.category] == null
+          ? 0
+          : categoryBasedExpense[e.category]);
+    });
+
+    //console.log(categoryBasedExpense);
+    return categoryBasedExpense;
   }
 
   addPropertyToObj(obj: any, property: string, val: object | number) {
-    //console.log(obj);
-    if (!obj.hasOwnProperty(property)) {
+    if (obj != null) {
       obj[property] = val;
+    } else {
+      obj = {
+        property: val,
+      };
     }
-
-    obj = obj[property];
   }
 
   addValueToPropertyObj(obj: any, property: string, val: object | number) {
@@ -212,9 +274,6 @@ export class ExpensesComponent implements OnInit {
   }
 
   getPolarChart(categoryBasedExpense: any) {
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue('--text-color');
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
     this.dataPolar = {
       labels: Object.keys(categoryBasedExpense), // ['Lifestyle', 'Food', 'Entertainment', 'Others', 'Travel', 'Utility']
       datasets: [
@@ -235,39 +294,74 @@ export class ExpensesComponent implements OnInit {
     this.optionsPolar = {};
   }
 
-  getStackedBarChart(expensesCards: any, idx = -1) {
-    let data, label;
+  getStackedBarChart(
+    expensesCards: any,
+    selectedTime: number,
+    selectedCard: number
+  ) {
+    console.log(expensesCards);
+    let data: Array<any> = [];
+    let label;
+    let labelAndData: any[] = [];
 
-    if (idx == -1) {
-      data = this.categoryBasedExpense;
-      label = 'Categorywise expenses';
+    if (selectedTime >= 0 && selectedTime < 2) {
+      //has current year data
+      data = this.getDataBasedOnTimeFrame(expensesCards, selectedTime);
+    } else if (selectedTime == 2) {
+      data = this.transactions;
     } else {
-      data = expensesCards[idx];
-      console.log(expensesCards, idx);
-      label = 'Card based Categorywise expenses';
+      // this.dataService
+      //   .getUserTransactionsYearRange(
+      //     this.usrId,
+      //     new Date().getFullYear() - 1,
+      //     new Date().getFullYear()
+      //   )
+      //   .subscribe(
+      //     (resp) => {
+      //       console.log(resp);
+      //       resp.transactionsByYear.forEach((ele: any) => {
+      //         if (parseInt(ele.year) == new Date().getFullYear() - 1) {
+      //           data = [...ele.transactions];
+      //         }
+      //       });
+      //     },
+      //     (error) => {
+      //       console.log(error);
+      //     },
+      //     () => {
+      //       let resp = this.getData(data);
+      //       data = resp[1];
+      //       label = data[0];
+      //       console.log(data);
+      //     }
+      //   );
     }
+    //console.log(data);
+    labelAndData = this.getData(data);
+    console.log(labelAndData);
 
+    let dataStacked: any[] = [];
+    labelAndData.forEach((card, idx) => {
+      dataStacked.push({
+        label: card[0],
+        data: Object.values(card[1]),
+        backgroundColor: this.colors[idx],
+        borderColor: this.backgroundBorderColor[idx],
+        borderWidth: 1,
+      });
+    });
+
+    console.log(labelAndData);
     this.dataStacked = {
-      labels: Object.keys(data), // ['Lifestyle', 'Food', 'Entertainment', 'Others', 'Travel', 'Utility']
-      datasets: [
-        {
-          label: label,
-          data: Object.values(data),
-          backgroundColor: this.colors.slice(0, Object.keys(data).length),
-          borderColor: this.backgroundBorderColor.slice(
-            0,
-            Object.keys(data).length
-          ),
-          borderWidth: 1,
-        },
-      ],
+      labels: Object.keys(labelAndData[0][1]), // ['Lifestyle', 'Food', 'Entertainment', 'Others', 'Travel', 'Utility']
+      datasets: dataStacked,
     };
 
     this.optionsStacked = {
       plugins: {
         title: {
           display: false,
-          text: '',
+          text: label,
         },
       },
       responsive: true,
@@ -281,6 +375,44 @@ export class ExpensesComponent implements OnInit {
       },
       maintainAspectRatio: false,
     };
+  }
+  getDataBasedOnTimeFrame(data: any, selectedTime: number): any {
+    let curMonth = new Date().getMonth() + 1;
+    let updatedData: any[] = [];
+    //console.log(data);
+
+    data.forEach((ele: any) => {
+      if (selectedTime == 0) {
+        if (parseInt(ele.month) == curMonth) {
+          updatedData = [...ele.transactions];
+        }
+      } else if (selectedTime == 1) {
+        if (
+          Math.floor((parseInt(ele.month) - 1) / 3) ==
+          Math.floor((curMonth - 1) / 3)
+        ) {
+          updatedData.push(...ele.transactions);
+        }
+      }
+    });
+
+    return updatedData;
+  }
+
+  getData(data: any): any[] {
+    let label: string = '';
+    let updatedData: any[] = [];
+
+    this.cards.forEach((card) => {
+      label = this.cardMapping[card.cardId] + ' expenses';
+      //console.log(data, card.cardId);
+      let moddata = data.filter((ele: any) => ele.cardIdUsed == card.cardId);
+      //console.log(data);
+      moddata = this.getCategoryBasedTransactionSummary(data);
+      updatedData.push([label, moddata]);
+    });
+
+    return updatedData;
   }
 
   // getUserTransations(id: number) {

@@ -10,7 +10,6 @@
 
 canvas {
   background: #fff;
-  height: 50rem;
 }
 
 :host ::ng-deep .p-dropdown-label {

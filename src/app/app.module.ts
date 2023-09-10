@@ -13,6 +13,10 @@ import { ChartModule } from 'primeng/chart';
 import { HttpClientModule } from '@angular/common/http';
 import { DropdownModule } from 'primeng/dropdown';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ExpenseTrackingComponent } from './components/expense-track/expense-tracking.component';
+import { CardTrackingComponent } from './components/card-tracking/card-tracking.component';
+import { CalendarModule } from 'primeng/calendar';
+import { InputTextModule } from 'primeng/inputtext';
 
 @NgModule({
   imports: [
@@ -25,6 +29,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     DropdownModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
+    CalendarModule,
+    InputTextModule,
   ],
   declarations: [
     AppComponent,
@@ -32,6 +38,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     HomeComponent,
     BookingsComponent,
     ExpensesComponent,
+    ExpenseTrackingComponent,
+    CardTrackingComponent,
   ],
   bootstrap: [AppComponent],
 })

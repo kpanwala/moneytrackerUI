@@ -1,0 +1,40 @@
+<div class="container">
+    <h3><b>Add Expense</b></h3>
+    <div class="card shadow mt-2 ms-2 me-2 bg-body rounded" style="height:25rem; width:95%;">
+        <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+            <div class="ms-4 mt-4">
+                <label for="title">Title </label>
+                <input type="text" pInputText class="custom-height p-inputtext-sm" id="title" name="title"
+                    formControlName="placeOfTransaction">
+            </div>
+            <div class="ms-4 mt-4">
+                <label for="amount">Amount </label>
+                <input type="text" pInputText class="custom-height p-inputtext-sm" id="amount" name="amount"
+                    formControlName="amount">
+            </div>
+            <div class="ms-4 mt-4">
+                <label for="cardIdUsed">Card Used </label>
+                <p-dropdown formControlName="cardIdUsed" placeholder="Select a Card" id="cardIdUsed" name="cardIdUsed"
+                    [options]="getCards()" optionLabel="cardName">
+                </p-dropdown>
+            </div>
+            <div class="ms-4 mt-4">
+                <label for="category">Category of Transaction </label>
+                <!-- <select id="category" name="category" formControlName="category">
+                    <option *ngFor="let cat of categoryDropdown" [value]="cat">{{cat}}</option>
+                </select> -->
+                <p-dropdown id="category" name="category" formControlName="category" placeholder="Select a Category"
+                    id="category" name="category" [options]="categoryDropdown">
+                </p-dropdown>
+            </div>
+            <div class="ms-4 mt-4">
+                <label for="dateOfTransaction">Date of Transaction</label>
+                <p-calendar name="dateOfTransaction" id="dateOfTransaction" formControlName="dateOfTransaction"
+                    [showIcon]="true" [maxDate]="maxDate"></p-calendar>
+            </div>
+            <div class="ms-4 mt-4">
+                <button type="submit" class="btn btn-info">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>

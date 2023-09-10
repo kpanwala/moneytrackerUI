@@ -1,0 +1,13 @@
+.btn-info {
+  background-color: #3c1e5e !important;
+  color: white !important;
+}
+
+.btn-info:hover {
+  background-color: #544664 !important;
+  color: white !important;
+}
+
+.custom-height {
+  height: 2rem !important;
+}
